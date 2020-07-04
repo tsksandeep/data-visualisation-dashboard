@@ -1,3 +1,17 @@
+.custom-body {
+  background-color: #784cd6;
+}
+
+.aligner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-button {
+  margin: 25px;
+}
+
 .image-wrapper {
   width: 500px;
   height: 100%;
@@ -5,7 +19,13 @@
   text-align: center;
 }
 
-img {
+.custom-logo {
+  width: 90%;
+  height: auto;
+  margin-bottom: 100px;
+}
+
+.custom-image {
   max-width: auto;
   max-height: 100%;
 }
@@ -22,6 +42,12 @@ img {
 
 .card-body {
   text-align: center;
+}
+
+.custom-anchor {
+  color:#784cd6;
+  background-color: white;
+  width: 250px;
 }
 
 .custom-card-header {

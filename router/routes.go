@@ -66,6 +66,7 @@ func (router *Router) AddRoutes() {
 		r.Get("/dashboard", accountHandler.Dashboard)
 		r.Post("/account/login", accountHandler.PostLogin)
 		r.Post("/account/register", accountHandler.PostRegister)
+		r.Get("/*", accountHandler.Welcome)
 	})
 
 	// set up static file serving

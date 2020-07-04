@@ -39,6 +39,15 @@ func (ah *accountHandler) Register(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ah *accountHandler) Dashboard(w http.ResponseWriter, r *http.Request) {
+	tmp, err := template.ParseFiles("./client/dashboard.html")
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	tmp.Execute(w, nil)
+}
+
+func (ah *accountHandler) Welcome(w http.ResponseWriter, r *http.Request) {
 	tmp, err := template.ParseFiles("./client/index.html")
 	if err != nil {
 		log.Error(err)
