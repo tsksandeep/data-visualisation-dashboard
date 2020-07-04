@@ -5,9 +5,9 @@
   text-align: center;
 }
 
-img{
-    max-width: auto;
-    max-height: 100%;
+img {
+  max-width: auto;
+  max-height: 100%;
 }
 
 .custom-heading {
@@ -34,4 +34,14 @@ img{
 
 .custom-table {
   border-radius: 0.5rem;
+}
+
+.custom-input,
+.custom-header,
+.custom-form {
+  border: none;
+}
+
+.custom-login {
+  width: 150px;
 }
