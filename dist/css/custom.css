@@ -1,0 +1,37 @@
+.image-wrapper {
+  width: 500px;
+  height: 100%;
+  margin: auto;
+  text-align: center;
+}
+
+img{
+    max-width: auto;
+    max-height: 100%;
+}
+
+.custom-heading {
+  color: white;
+  background-color: #14c6a4;
+  text-align: center;
+  margin: 2rem 0;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  font-weight: 400;
+}
+
+.card-body {
+  text-align: center;
+}
+
+.custom-card-header {
+  color: #006ac7;
+  font-size: large;
+  border: none;
+  text-align: center;
+  margin: 1rem;
+}
+
+.custom-table {
+  border-radius: 0.5rem;
+}
