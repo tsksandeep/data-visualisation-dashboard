@@ -83,6 +83,9 @@ func (router *Router) AddRoutes() {
 
 		//routes to data handler
 		r.Get("/data/employee", dataHandler.GetEmployeeData)
+		r.Get("/data/chart/month", dataHandler.GetMonthData)
+		r.Get("/data/chart/day", dataHandler.GetDayData)
+		r.Get("/data/chart/profit", dataHandler.GetProfitData)
 
 		//default
 		r.Get("/*", accountHandler.Welcome)

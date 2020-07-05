@@ -5,8 +5,6 @@ import (
 	"net/http"
 
 	"know/handlers"
-
-	log "github.com/sirupsen/logrus"
 )
 
 type dataHandler struct{}
@@ -86,8 +84,49 @@ func (dh *dataHandler) GetEmployeeData(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	log.Info(employeeData)
-
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(employeeData)
+}
+
+func (dh *dataHandler) GetMonthData(w http.ResponseWriter, r *http.Request) {
+	monthData := map[string]int{
+		"January":30000,
+		"February":20000,
+		"March":45000,
+		"April":27000,
+		"May":15000,
+		"June":35000,
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(monthData)
+}
+
+func (dh *dataHandler) GetDayData(w http.ResponseWriter, r *http.Request) {
+	dayData := map[string]int{
+		"June 1":30000,
+		"June 2":20000,
+		"June 3":45000,
+		"June 4":65000,
+		"June 5":15000,
+		"June 6":27000,
+		"June 7":34000,
+		"June 8":45000,
+		"June 9":35000,
+		"June 10":45000,
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(dayData)
+}
+
+func (dh *dataHandler) GetProfitData(w http.ResponseWriter, r *http.Request) {
+	profitData := map[string]int{
+		"January":30000,
+		"February":20000,
+		"March":45000,
+		"April":27000,
+		"May":15000,
+		"June":35000,
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(profitData)
 }

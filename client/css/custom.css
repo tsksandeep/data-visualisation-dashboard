@@ -12,12 +12,34 @@
   margin: 25px;
 }
 
+.custom-report {
+  border-bottom: 2px white solid;
+}
+
+.custom-download-section {
+  margin-top: 15px;
+}
+
+.custom-download {
+  padding: 15px;
+  border-radius: 5px;
+}
+
+.custom-download a {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
 .username {
   position: absolute;
   color: white;
   margin-left: 15px;
   font-size: large;
   right: 15px;
+  text-transform: uppercase;
 }
 
 .image-wrapper {

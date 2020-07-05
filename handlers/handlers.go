@@ -14,4 +14,7 @@ type AccountHandler interface {
 
 type DataHandler interface {
 	GetEmployeeData(w http.ResponseWriter, r *http.Request)
+	GetMonthData(w http.ResponseWriter, r *http.Request)
+	GetDayData(w http.ResponseWriter, r *http.Request)
+	GetProfitData(w http.ResponseWriter, r *http.Request)
 }
