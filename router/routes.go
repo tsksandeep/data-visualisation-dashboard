@@ -8,6 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"know/handlers/account"
+	"know/handlers/data"
 	"know/middleware"
 )
 
@@ -59,14 +60,19 @@ func NewRouter() *Router {
 //AddRoutes adds routes to the router
 func (router *Router) AddRoutes() {
 	accountHandler := account.New()
+	dataHandler := data.New()
 
 	router.Group(func(r chi.Router) {
+		//routes to account handler
 		r.Get("/login", accountHandler.Login)
 		r.Get("/register", accountHandler.Register)
 		r.Get("/dashboard", accountHandler.Dashboard)
 		r.Post("/account/login", accountHandler.PostLogin)
 		r.Post("/account/register", accountHandler.PostRegister)
 		r.Get("/*", accountHandler.Welcome)
+
+		//routes to data handler
+		r.Get("/data/employee", dataHandler.GetEmployeeData)
 	})
 
 	// set up static file serving

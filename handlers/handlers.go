@@ -11,3 +11,7 @@ type AccountHandler interface {
 	PostLogin(w http.ResponseWriter, r *http.Request)
 	PostRegister(w http.ResponseWriter, r *http.Request)
 }
+
+type DataHandler interface {
+	GetEmployeeData(w http.ResponseWriter, r *http.Request)
+}
