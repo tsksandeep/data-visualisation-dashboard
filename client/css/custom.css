@@ -12,6 +12,10 @@
   margin: 25px;
 }
 
+.register-button {
+  text-align: right;
+}
+
 .custom-report {
   border-bottom: 2px white solid;
 }
@@ -101,3 +105,9 @@ a:hover {
 .custom-login {
   width: 150px;
 }
+
+@media (max-width: 768px) {
+  .button-align {
+    text-align: center;
+  }
+} 
