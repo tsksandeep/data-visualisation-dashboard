@@ -17,8 +17,8 @@ function generateTable() {
       let employeeInfo = response.data
 
       for (var i = 0; i < employeeInfo["employee"].length; i++) {
-        var tr = tableRow.cloneNode(false)
         if (!isHeaderAppended) {
+          var tr = tableRow.cloneNode(false)
           for (var key in employeeInfo["employee"][i]) {
             var th = tableHead.cloneNode(false)
 
@@ -28,7 +28,7 @@ function generateTable() {
           table.appendChild(tr)
           isHeaderAppended = true
         }
-        
+
         var tr = tableRow.cloneNode(false)
         for (var key in employeeInfo["employee"][i]) {
           var td = tableData.cloneNode(false)
