@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/go-chi/chi"
+	"github.com/go-chi/cors"
 	log "github.com/sirupsen/logrus"
 
 	"know/handlers/account"
@@ -54,7 +55,17 @@ type Router struct {
 
 //NewRouter creates new router
 func NewRouter() *Router {
-	return &Router{Mux: chi.NewRouter()}
+	r := chi.NewRouter()
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "PUT", "POST", "DELETE", "PATCH", "OPTIONS"},
+		AllowedHeaders:   []string{"*"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300,
+	})
+	r.Use(c.Handler)
+	return &Router{Mux: r}
 }
 
 //AddRoutes adds routes to the router
@@ -69,10 +80,12 @@ func (router *Router) AddRoutes() {
 		r.Get("/dashboard", accountHandler.Dashboard)
 		r.Post("/account/login", accountHandler.PostLogin)
 		r.Post("/account/register", accountHandler.PostRegister)
-		r.Get("/*", accountHandler.Welcome)
 
 		//routes to data handler
 		r.Get("/data/employee", dataHandler.GetEmployeeData)
+
+		//default
+		r.Get("/*", accountHandler.Welcome)
 	})
 
 	// set up static file serving

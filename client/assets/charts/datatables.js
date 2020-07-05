@@ -1,43 +1,50 @@
-const fetch = require("node-fetch");
+const axios = require('axios');
 
 var tableDoc = document.createElement('table')
 var tableRow = document.createElement('tr')
-//var tableHead = document.createElement('th')
+var tableHead = document.createElement('th')
 var tableData = document.createElement('td')
 
 tableDoc.className = "table table-borderless table-dark custom-table"
 
-function getResponse(url) {
-  return fetch(url, {
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    }
-  }).then((response) => response.json())
-};
-
-function getAllResponse() {
-  return Promise.all([getResponse("http://127.0.0.1:3000/data/employee")])
-}
-
-
 // table generator function which generates the table
 function generateTable() {
-  var table = tableDoc.cloneNode(false)
-  var employeeInfo = getAllResponse().then(([data]) => {
-    return data;
-  })
+  axios.get("/data/employee")
+    .then(response => {
+      var isHeaderAppended = false
+      var table = tableDoc.cloneNode(false)
 
-  for (var i = 0; i < employeeInfo["employee"].length; i++) {
-    var tr = tableRow.cloneNode(false)
-    for (var key in employeeInfo["employee"][i]) {
-      var td = tableData.cloneNode(false)
-      td.appendChild(document.createTextNode(employeeInfo["employee"][i][key]))
-      tr.appendChild(td)
-    }
-    table.appendChild(tr)
-  }
-  return table
+      let employeeInfo = response.data
+
+      for (var i = 0; i < employeeInfo["employee"].length; i++) {
+        var tr = tableRow.cloneNode(false)
+        if (!isHeaderAppended) {
+          for (var key in employeeInfo["employee"][i]) {
+            var th = tableHead.cloneNode(false)
+
+            th.appendChild(document.createTextNode(key))
+            tr.appendChild(th)
+          }
+          table.appendChild(tr)
+          isHeaderAppended = true
+        }
+        
+        var tr = tableRow.cloneNode(false)
+        for (var key in employeeInfo["employee"][i]) {
+          var td = tableData.cloneNode(false)
+
+          td.appendChild(document.createTextNode(employeeInfo["employee"][i][key]))
+          tr.appendChild(td)
+        }
+
+        table.appendChild(tr)
+      }
+
+      document.getElementById("dataTable").appendChild(table)
+    })
+    .catch(error => {
+      console.log(error);
+    });
 }
 
-document.getElementById("dataTable").appendChild(generateTable())
+generateTable()

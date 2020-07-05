@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"know/handlers"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type dataHandler struct{}
@@ -83,6 +85,8 @@ func (dh *dataHandler) GetEmployeeData(w http.ResponseWriter, r *http.Request) {
 			"Salary":     "$170,750",
 		},
 	}
+
+	log.Info(employeeData)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(employeeData)
