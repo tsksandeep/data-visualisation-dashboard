@@ -1,14 +1,15 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 	"regexp"
 )
 
 const (
 	cacheControl        = "Cache-Control"
+	cacheControlNoCache = "no-cache"
 	cacheControlNoStore = "no-store"
-	cacheControlPublic  = "public, max-age=604800, immutable"
 )
 
 var (
@@ -18,10 +19,7 @@ var (
 
 func UICacheControl(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		cacheControlValue := cacheControlNoStore
-		if shouldCache(r.URL.Path) {
-			cacheControlValue = cacheControlPublic
-		}
+		cacheControlValue := fmt.Sprintf("%s, %s", cacheControlNoCache, cacheControlNoStore)
 		w.Header().Set(cacheControl, cacheControlValue)
 		next.ServeHTTP(w, r)
 	})
