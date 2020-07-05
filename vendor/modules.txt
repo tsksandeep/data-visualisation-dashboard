@@ -12,5 +12,7 @@ github.com/iancoleman/orderedmap
 github.com/konsorten/go-windows-terminal-sequences
 # github.com/sirupsen/logrus v1.6.0
 github.com/sirupsen/logrus
+# github.com/tealeg/xlsx v1.0.5
+github.com/tealeg/xlsx
 # golang.org/x/sys v0.0.0-20190422165155-953cdadca894
 golang.org/x/sys/unix

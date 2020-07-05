@@ -7,6 +7,7 @@ require (
 	github.com/iancoleman/orderedmap v0.0.0-20190318233801-ac98e3ecb4b0
 	github.com/sirupsen/logrus v1.6.0
 	github.com/stretchr/testify v1.4.0 // indirect
+	github.com/tealeg/xlsx v1.0.5
 )
 
 go 1.13

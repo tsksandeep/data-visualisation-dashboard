@@ -17,4 +17,9 @@ type DataHandler interface {
 	GetMonthData(w http.ResponseWriter, r *http.Request)
 	GetDayData(w http.ResponseWriter, r *http.Request)
 	GetProfitData(w http.ResponseWriter, r *http.Request)
+
+	DownloadToday(w http.ResponseWriter, r *http.Request)
+	DownloadYesterday(w http.ResponseWriter, r *http.Request)
+	DownloadWeek(w http.ResponseWriter, r *http.Request)
+	DownloadMonth(w http.ResponseWriter, r *http.Request)
 }

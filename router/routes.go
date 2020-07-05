@@ -87,6 +87,12 @@ func (router *Router) AddRoutes() {
 		r.Get("/data/chart/day", dataHandler.GetDayData)
 		r.Get("/data/chart/profit", dataHandler.GetProfitData)
 
+		//router to data download
+		r.Get("/data/download/today", dataHandler.DownloadToday)
+		r.Get("/data/download/yesterday", dataHandler.DownloadYesterday)
+		r.Get("/data/download/week", dataHandler.DownloadWeek)
+		r.Get("/data/download/month", dataHandler.DownloadMonth)
+
 		//default
 		r.Get("/*", accountHandler.Welcome)
 	})
