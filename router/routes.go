@@ -11,6 +11,7 @@ import (
 	"know/handlers/account"
 	"know/handlers/data"
 	"know/middleware"
+	"know/models"
 )
 
 // FileSystem is a custom file system handler to handle requests to React routes
@@ -69,8 +70,8 @@ func NewRouter() *Router {
 }
 
 //AddRoutes adds routes to the router
-func (router *Router) AddRoutes() {
-	accountHandler := account.New()
+func (router *Router) AddRoutes(stores *models.Stores) {
+	accountHandler := account.New(stores)
 	dataHandler := data.New()
 
 	router.Group(func(r chi.Router) {

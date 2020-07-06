@@ -1,0 +1,124 @@
+package postgres
+
+import (
+	"database/sql"
+
+	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
+
+	"know/db"
+	"know/models"
+)
+
+type accountStore struct {
+	*db.DB
+}
+
+//NewAccountStore initiates a new instance of ConfigStore
+func NewAccountStore(db *db.DB) (models.AccountStore, error) {
+
+	if db == nil {
+		return nil, errors.New("account store new instance creation failed: invalid database")
+	}
+
+	return &accountStore{db}, nil
+}
+
+func (as *accountStore) Save(account *models.Account) error {
+
+	log.Debug("adding new account info: " + account.Email + " " + account.FirstName + " " + account.LastName)
+
+	if account == nil {
+		return models.ErrAddAccount
+	}
+
+	if account.Email == "" || account.FirstName == "" || account.LastName == "" || account.Password == "" {
+		return models.ErrAddAccount
+	}
+
+	sqlStmt := `INSERT OR REPLACE INTO account_info(email, firstName, lastName, password) VALUES ($1, $2, $3, $4)`
+
+	_, err := as.Exec(sqlStmt, account.Email, account.FirstName, account.LastName, account.Password)
+	if err != nil {
+		return errors.Wrap(err, "add account record failed: sql statement exec failed")
+	}
+
+	return nil
+}
+
+func (as *accountStore) Delete(email string) error {
+
+	log.Debug("deleteing account " + email)
+
+	if email == "" {
+		return models.ErrDeleteAccount
+	}
+
+	sqlStmt := `DELETE FROM account_info WHERE email = $1`
+	result, err := as.Exec(sqlStmt, email)
+	if err != nil {
+		return errors.Wrap(err, "account deletion failed, sql statement exec failed")
+	}
+
+	if count, _ := result.RowsAffected(); count == 0 {
+		return models.ErrNoAccountFound
+	}
+
+	return nil
+}
+
+func (as *accountStore) Get(email string) (*models.Account, error) {
+
+	log.Debug("get config " + email)
+
+	if email == "" {
+		return nil, models.ErrGetAccount
+	}
+
+	query := `SELECT email, firstName, lastName, password FROM account_info WHERE email = $1`
+
+	var account models.Account
+
+	row := as.QueryRow(query, email)
+	err := row.Scan(&account.Email, &account.FirstName, &account.LastName, &account.Password)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, models.ErrNoAccountFound
+		}
+
+		return nil, errors.Wrap(err, "get account failed due to sql query failure")
+	}
+
+	return &account, nil
+}
+
+func (as *accountStore) GetAll() ([]models.Account, error) {
+
+	log.Debug("get all account info")
+	query := `SELECT email, firstName, lastName, password FROM account_info`
+
+	rows, err := as.Query(query)
+	if err != nil {
+		return nil, errors.Wrap(err, "get account records failed due to sql query failure")
+	}
+
+	defer rows.Close()
+
+	var accounts = []models.Account{}
+	var account models.Account
+
+	for rows.Next() {
+		err := rows.Scan(&account.Email, &account.FirstName, &account.LastName, &account.Password)
+		if err != nil {
+			return nil, errors.Wrap(err, "get all accounts failed, failed to scan exec result")
+		}
+
+		accounts = append(accounts, account)
+	}
+
+	if len(accounts) == 0 {
+		return nil, models.ErrNoAccountFound
+	}
+
+	return accounts, nil
+}

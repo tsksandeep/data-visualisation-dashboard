@@ -8,18 +8,19 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"know/handlers"
+	"know/models"
 )
 
 var store = sessions.NewCookieStore([]byte("mysession"))
 
 type accountHandler struct {
-	account map[string]map[string]string
+	stores *models.Stores
 }
 
 //New Account handler
-func New() handlers.AccountHandler {
+func New(stores *models.Stores) handlers.AccountHandler {
 	return &accountHandler{
-		account: map[string]map[string]string{},
+		stores: stores,
 	}
 }
 
@@ -34,16 +35,18 @@ func (ah *accountHandler) Info(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	firstName := ah.account[session.Values["email"].(string)]["First Name"]
-	lastName := ah.account[session.Values["email"].(string)]["Last Name"]
-	email := session.Values["email"].(string)
-	password := ah.account[session.Values["email"].(string)]["Password"]
+	accountInfo, err := ah.stores.AccountStore.Get(session.Values["email"].(string))
+	if err != nil {
+		log.Error("unable to get account")
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
 
 	data := map[string]interface{}{
-		"firstName": firstName,
-		"lastName":  lastName,
-		"email":     email,
-		"password":  password,
+		"firstName": accountInfo.FirstName,
+		"lastName":  accountInfo.LastName,
+		"email":     accountInfo.Email,
+		"password":  accountInfo.Password,
 	}
 
 	tmp, err := template.ParseFiles("./client/info.html")
@@ -83,10 +86,15 @@ func (ah *accountHandler) Dashboard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userName := ah.account[session.Values["email"].(string)]["First Name"]
+	accountInfo, err := ah.stores.AccountStore.Get(session.Values["email"].(string))
+	if err != nil {
+		log.Error("unable to get account")
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
 
 	data := map[string]interface{}{
-		"username": userName,
+		"username": accountInfo.FirstName,
 	}
 
 	tmp, err := template.ParseFiles("./client/dashboard.html")
@@ -110,43 +118,46 @@ func (ah *accountHandler) Welcome(w http.ResponseWriter, r *http.Request) {
 
 func (ah *accountHandler) PostLogin(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
+
 	email := r.Form.Get("email")
 	password := r.Form.Get("password")
 
-	log.Infof("Email : %s Password : %s", email, password)
-
-	if accountInfo, ok := ah.account[email]; ok {
-		if accountInfo["Password"] == password {
-			session, err := store.Get(r, "mysession")
-			if err != nil {
-				log.Error("unable to get session")
-			}
-			session.Values["email"] = email
-			session.Values["password"] = password
-
-			session.Save(r, w)
-			http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
-			return
-		}
+	accountInfo, err := ah.stores.AccountStore.Get(email)
+	if err != nil || accountInfo.Password != password {
+		log.Error("unable to get account")
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
 	}
 
-	http.Redirect(w, r, "/login", http.StatusSeeOther)
+	session, err := store.Get(r, "mysession")
+	if err != nil {
+		log.Error("unable to get session")
+		return
+	}
+
+	session.Values["email"] = email
+	session.Values["password"] = password
+
+	session.Save(r, w)
+	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 	return
 }
 
 func (ah *accountHandler) PostRegister(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
-	firstName := r.Form.Get("firstName")
-	lastName := r.Form.Get("lastName")
-	email := r.Form.Get("email")
-	password := r.Form.Get("password")
 
-	log.Infof("FirstName : %s LastName : %s Email : %s Password : %s", firstName, lastName, email, password)
+	accountInfo := models.Account{}
 
-	ah.account[email] = map[string]string{
-		"First Name": firstName,
-		"Last Name":  lastName,
-		"Password":   password,
+	accountInfo.FirstName = r.Form.Get("firstName")
+	accountInfo.LastName = r.Form.Get("lastName")
+	accountInfo.Email = r.Form.Get("email")
+	accountInfo.Password = r.Form.Get("password")
+
+	err := ah.stores.AccountStore.Save(&accountInfo)
+	if err != nil {
+		log.Error("unable to save account")
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
 	}
 
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
