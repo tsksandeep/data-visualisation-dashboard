@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"os"
 
-	logDNA "github.com/evalphobia/go-logdna/logdna"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
+	"github.com/logdna/logdna-go/logger"
 
 	"know/handlers/account"
 	"know/handlers/data"
@@ -17,7 +17,8 @@ import (
 // FileSystem is a custom file system handler to handle requests to React routes
 type FileSystem struct {
 	fs  http.FileSystem
-	log *logDNA.Client}
+	log *logger.Logger
+}
 
 // Open opens file
 func (fs FileSystem) Open(path string) (http.File, error) {
@@ -26,22 +27,22 @@ func (fs FileSystem) Open(path string) (http.File, error) {
 	f, err := fs.fs.Open(path)
 	if os.IsNotExist(err) {
 		if f, err = fs.fs.Open(index); err != nil {
-			fs.log.Err(err.Error())
+			fs.log.Error(err.Error())
 			return nil, err
 		}
 	} else if err != nil {
-		fs.log.Err(err.Error())
+		fs.log.Error(err.Error())
 		return nil, err
 	}
 
 	s, err := f.Stat()
 	if err != nil {
-		fs.log.Err(err.Error())
+		fs.log.Error(err.Error())
 		return nil, err
 	}
 	if s.IsDir() {
 		if _, err = fs.fs.Open(index); err != nil {
-			fs.log.Err(err.Error())
+			fs.log.Error(err.Error())
 			return nil, err
 		}
 	}
@@ -70,7 +71,7 @@ func NewRouter() *Router {
 }
 
 //AddRoutes adds routes to the router
-func (router *Router) AddRoutes(stores *models.Stores, log *logDNA.Client) {
+func (router *Router) AddRoutes(stores *models.Stores, log *logger.Logger) {
 	accountHandler := account.New(stores, log)
 	dataHandler := data.New()
 

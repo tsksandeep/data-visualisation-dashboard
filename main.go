@@ -11,11 +11,11 @@ import (
 	"know/models/postgres"
 	"know/router"
 
-	logDNA "github.com/evalphobia/go-logdna/logdna"
+	"github.com/logdna/logdna-go/logger"
 )
 
 //CreateStores creates all the stores
-func createStores(postgresDB *db.DB, log *logDNA.Client) (*models.Stores, error) {
+func createStores(postgresDB *db.DB, log *logger.Logger) (*models.Stores, error) {
 	var stores models.Stores
 	accountStore, err := postgres.NewAccountStore(postgresDB, log)
 	if err != nil {
@@ -28,19 +28,14 @@ func createStores(postgresDB *db.DB, log *logDNA.Client) (*models.Stores, error)
 
 func main() {
 
-	logDNAConfig := logDNA.Config{
-		APIKey:       os.Getenv("LOGDNA_KEY"),
-		App:          "know-dash",
-		Env:          "production",
-		MinimumLevel: logDNA.LogLevelInfo,
-		Sync:         false,
-		Debug:        true,
-	}
+	log := logger.CreateLogger(logger.Options{
+		Level:    "fatal",
+		Hostname: "Know",
+		App:      "know-dash",
+		Env:      "production",
+	}, os.Getenv("LOGDNA_KEY"))
 
-	log, err := logDNA.New(logDNAConfig)
-	if err != nil {
-		panic(err)
-	}
+	defer log.Close()
 
 	postgresDB, err := db.NewDB(log)
 	if err != nil {

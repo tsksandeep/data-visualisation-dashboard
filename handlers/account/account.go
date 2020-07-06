@@ -4,7 +4,7 @@ import (
 	"html/template"
 	"net/http"
 
-	logDNA "github.com/evalphobia/go-logdna/logdna"
+	"github.com/logdna/logdna-go/logger"
 	"github.com/gorilla/sessions"
 
 	"know/handlers"
@@ -15,11 +15,11 @@ var store = sessions.NewCookieStore([]byte("mysession"))
 
 type accountHandler struct {
 	stores *models.Stores
-	log    *logDNA.Client
+	log    *logger.Logger
 }
 
 //New Account handler
-func New(stores *models.Stores, log *logDNA.Client) handlers.AccountHandler {
+func New(stores *models.Stores, log *logger.Logger) handlers.AccountHandler {
 	return &accountHandler{
 		stores: stores,
 		log:    log,
@@ -29,7 +29,7 @@ func New(stores *models.Stores, log *logDNA.Client) handlers.AccountHandler {
 func (ah *accountHandler) Info(w http.ResponseWriter, r *http.Request) {
 	session, err := store.Get(r, "mysession")
 	if err != nil {
-		ah.log.Err("unable to get session")
+		ah.log.Error("unable to get session")
 	}
 
 	if session.Values["email"] == nil {
@@ -39,7 +39,7 @@ func (ah *accountHandler) Info(w http.ResponseWriter, r *http.Request) {
 
 	accountInfo, err := ah.stores.AccountStore.Get(session.Values["email"].(string))
 	if err != nil {
-		ah.log.Err("unable to get account")
+		ah.log.Error("unable to get account")
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
@@ -53,7 +53,7 @@ func (ah *accountHandler) Info(w http.ResponseWriter, r *http.Request) {
 
 	tmp, err := template.ParseFiles("./client/info.html")
 	if err != nil {
-		ah.log.Err(err.Error())
+		ah.log.Error(err.Error())
 		return
 	}
 	tmp.Execute(w, data)
@@ -62,7 +62,7 @@ func (ah *accountHandler) Info(w http.ResponseWriter, r *http.Request) {
 func (ah *accountHandler) Login(w http.ResponseWriter, r *http.Request) {
 	tmp, err := template.ParseFiles("./client/login.html")
 	if err != nil {
-		ah.log.Err(err.Error())
+		ah.log.Error(err.Error())
 		return
 	}
 	tmp.Execute(w, nil)
@@ -71,7 +71,7 @@ func (ah *accountHandler) Login(w http.ResponseWriter, r *http.Request) {
 func (ah *accountHandler) Register(w http.ResponseWriter, r *http.Request) {
 	tmp, err := template.ParseFiles("./client/register.html")
 	if err != nil {
-		ah.log.Err(err.Error())
+		ah.log.Error(err.Error())
 		return
 	}
 	tmp.Execute(w, nil)
@@ -80,7 +80,7 @@ func (ah *accountHandler) Register(w http.ResponseWriter, r *http.Request) {
 func (ah *accountHandler) Dashboard(w http.ResponseWriter, r *http.Request) {
 	session, err := store.Get(r, "mysession")
 	if err != nil {
-		ah.log.Err("unable to get session")
+		ah.log.Error("unable to get session")
 	}
 
 	if session.Values["email"] == nil {
@@ -90,7 +90,7 @@ func (ah *accountHandler) Dashboard(w http.ResponseWriter, r *http.Request) {
 
 	accountInfo, err := ah.stores.AccountStore.Get(session.Values["email"].(string))
 	if err != nil {
-		ah.log.Err("unable to get account")
+		ah.log.Error("unable to get account")
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
@@ -101,7 +101,7 @@ func (ah *accountHandler) Dashboard(w http.ResponseWriter, r *http.Request) {
 
 	tmp, err := template.ParseFiles("./client/dashboard.html")
 	if err != nil {
-		ah.log.Err(err.Error())
+		ah.log.Error(err.Error())
 		return
 	}
 	tmp.Execute(w, data)
@@ -111,7 +111,7 @@ func (ah *accountHandler) Welcome(w http.ResponseWriter, r *http.Request) {
 
 	tmp, err := template.ParseFiles("./client/index.html")
 	if err != nil {
-		ah.log.Err(err.Error())
+		ah.log.Error(err.Error())
 		return
 	}
 
@@ -126,14 +126,14 @@ func (ah *accountHandler) PostLogin(w http.ResponseWriter, r *http.Request) {
 
 	accountInfo, err := ah.stores.AccountStore.Get(email)
 	if err != nil || accountInfo.Password != password {
-		ah.log.Err("unable to get account")
+		ah.log.Error("unable to get account")
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
 
 	session, err := store.Get(r, "mysession")
 	if err != nil {
-		ah.log.Err("unable to get session")
+		ah.log.Error("unable to get session")
 		return
 	}
 
@@ -157,7 +157,7 @@ func (ah *accountHandler) PostRegister(w http.ResponseWriter, r *http.Request) {
 
 	err := ah.stores.AccountStore.Save(&accountInfo)
 	if err != nil {
-		ah.log.Err("unable to save account")
+		ah.log.Error("unable to save account")
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}

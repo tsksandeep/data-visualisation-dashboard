@@ -1,7 +1,3 @@
-# github.com/evalphobia/go-logdna v0.1.0
-github.com/evalphobia/go-logdna/logdna
-# github.com/evalphobia/httpwrapper v0.2.0
-github.com/evalphobia/httpwrapper/request
 # github.com/go-chi/chi v4.1.2+incompatible
 github.com/go-chi/chi
 # github.com/go-chi/cors v1.1.1
@@ -18,33 +14,13 @@ github.com/konsorten/go-windows-terminal-sequences
 github.com/lib/pq
 github.com/lib/pq/oid
 github.com/lib/pq/scram
+# github.com/logdna/logdna-go v1.0.0
+github.com/logdna/logdna-go/logger
 # github.com/pkg/errors v0.9.1
 github.com/pkg/errors
 # github.com/sirupsen/logrus v1.6.0
 github.com/sirupsen/logrus
 # github.com/tealeg/xlsx v1.0.5
 github.com/tealeg/xlsx
-# golang.org/x/net v0.0.0-20190628185345-da137c7871d7
-golang.org/x/net/publicsuffix
 # golang.org/x/sys v0.0.0-20200302150141-5c8b2ff67527
 golang.org/x/sys/unix
-# gopkg.in/eapache/go-resiliency.v1 v1.2.0
-gopkg.in/eapache/go-resiliency.v1/retrier
-# gopkg.in/h2non/gentleman-retry.v2 v2.0.1
-gopkg.in/h2non/gentleman-retry.v2
-# gopkg.in/h2non/gentleman.v2 v2.0.3
-gopkg.in/h2non/gentleman.v2
-gopkg.in/h2non/gentleman.v2/context
-gopkg.in/h2non/gentleman.v2/middleware
-gopkg.in/h2non/gentleman.v2/mux
-gopkg.in/h2non/gentleman.v2/plugin
-gopkg.in/h2non/gentleman.v2/plugins/auth
-gopkg.in/h2non/gentleman.v2/plugins/body
-gopkg.in/h2non/gentleman.v2/plugins/bodytype
-gopkg.in/h2non/gentleman.v2/plugins/cookies
-gopkg.in/h2non/gentleman.v2/plugins/headers
-gopkg.in/h2non/gentleman.v2/plugins/multipart
-gopkg.in/h2non/gentleman.v2/plugins/query
-gopkg.in/h2non/gentleman.v2/plugins/timeout
-gopkg.in/h2non/gentleman.v2/plugins/url
-gopkg.in/h2non/gentleman.v2/utils

@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	logDNA "github.com/evalphobia/go-logdna/logdna"
+	"github.com/logdna/logdna-go/logger"
 	"github.com/pkg/errors"
 
 	"know/db"
@@ -13,11 +13,11 @@ import (
 
 type accountStore struct {
 	db  *db.DB
-	log *logDNA.Client
+	log *logger.Logger
 }
 
 //NewAccountStore initiates a new instance of ConfigStore
-func NewAccountStore(db *db.DB, log *logDNA.Client) (models.AccountStore, error) {
+func NewAccountStore(db *db.DB, log *logger.Logger) (models.AccountStore, error) {
 	if db == nil {
 		return nil, errors.New("account store new instance creation failed: invalid database")
 	}
