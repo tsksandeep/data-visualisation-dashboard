@@ -29,10 +29,11 @@ func createStores(postgresDB *db.DB, log *logger.Logger) (*models.Stores, error)
 func main() {
 
 	log := logger.CreateLogger(logger.Options{
-		Level:    "fatal",
-		Hostname: "Know",
-		App:      "know-dash",
-		Env:      "production",
+		Level:         "fatal",
+		Hostname:      "Know",
+		App:           "know-dash",
+		Env:           "production",
+		FlushInterval: 1 * time.Second,
 	}, os.Getenv("LOGDNA_KEY"))
 
 	defer log.Close()
