@@ -21,8 +21,8 @@
         <div class="image-wrapper">
             <img class="custom-image" src="assets/img/Know.png" alt="Know app">
         </div>
-        <div class="username">
-            {{.username}}
+        <div class="shadow p-1 rounded username">
+            <a class="info-name" href="/info">{{.username}}</a>
         </div>
     </nav>
     <div id="layoutSidenav">
@@ -35,7 +35,7 @@
                             <div class="shadow p-3 mb-5 rounded bg-primary text-white">
                                 <div class="card-body custom-report">TODAY'S REPORT</div>
                                 <div class="card-body custom-download-section"><a class="bg-warning custom-download"
-                                        href="data/download/today" download>DOWNLOAD</a></div>
+                                        href="/data/download/today" download>DOWNLOAD</a></div>
                             </div>
                         </div>
                         <div class="col-xl-3 col-md-6">

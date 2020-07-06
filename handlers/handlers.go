@@ -4,6 +4,7 @@ import "net/http"
 
 //AccountHandler is for Account Authentication
 type AccountHandler interface {
+	Info(w http.ResponseWriter, r *http.Request)
 	Login(w http.ResponseWriter, r *http.Request)
 	Register(w http.ResponseWriter, r *http.Request)
 	Dashboard(w http.ResponseWriter, r *http.Request)

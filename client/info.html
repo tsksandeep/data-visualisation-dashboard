@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Account</title>
+    <link href="css/styles.css" rel="stylesheet" />
+    <link href="css/custom.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <nav class="sb-topnav navbar navbar-expand custom">
+        <div class="image-wrapper">
+            <img class="custom-image" src="assets/img/Know.png" alt="Know app">
+        </div>
+    </nav>
+    <div id="layoutAuthentication">
+        <div id="layoutAuthentication_content">
+            <main>
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-7">
+                            <div class="card shadow-lg rounded-lg mt-5 custom-form">
+                                <div class="card-header custom-header">
+                                    <h3 class="text-center my-4">ACCOUNT</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-row">
+                                        <div class="col-md-6">
+                                            <label for="firstName">FIRST NAME</label>
+                                            <div class="shadow p-3 mb-5 rounded form-control py-4 custom-input firstName"
+                                                id="firstName"><div>{{.firstName}}</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="lastName">LAST NAME</label>
+                                            <div class="shadow p-3 mb-5 rounded form-control py-4 custom-input lastName"
+                                                id="lastName">{{.lastName}}</div>
+                                        </div>
+                                    </div>
+                                    <label for="email">EMAIL</label>
+                                    <div class="shadow p-3 mb-5 rounded form-control py-4 custom-input email"
+                                        id="email">{{.email}}</div>
+                                    <div class="form-row">
+                                        <div class="col-md">
+                                            <label for="password">PASSWORD</label>
+                                            <div class="shadow p-3 mb-5 rounded form-control py-4 custom-input password"
+                                                id="password">{{.password}}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
+    <script src="js/scripts.js"></script>
+</body>
+
+</html>

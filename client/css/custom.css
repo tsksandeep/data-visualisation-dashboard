@@ -36,9 +36,19 @@ a:hover {
   text-decoration: none;
 }
 
+.firstName , .lastName , .email , .password {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.info-name {
+  color: #784cd6;
+}
+
 .username {
   position: absolute;
-  color: white;
+  background: white;
   margin-left: 15px;
   font-size: large;
   right: 15px;

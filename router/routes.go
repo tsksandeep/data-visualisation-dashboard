@@ -75,6 +75,7 @@ func (router *Router) AddRoutes() {
 
 	router.Group(func(r chi.Router) {
 		//routes to account handler
+		r.Get("/info", accountHandler.Info)
 		r.Get("/login", accountHandler.Login)
 		r.Get("/register", accountHandler.Register)
 		r.Get("/dashboard", accountHandler.Dashboard)

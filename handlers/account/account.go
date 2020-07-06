@@ -23,6 +23,37 @@ func New() handlers.AccountHandler {
 	}
 }
 
+func (ah *accountHandler) Info(w http.ResponseWriter, r *http.Request) {
+	session, err := store.Get(r, "mysession")
+	if err != nil {
+		log.Error("unable to get session")
+	}
+
+	if session.Values["email"] == nil {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+
+	firstName := ah.account[session.Values["email"].(string)]["First Name"]
+	lastName := ah.account[session.Values["email"].(string)]["Last Name"]
+	email := session.Values["email"].(string)
+	password := ah.account[session.Values["email"].(string)]["Password"]
+
+	data := map[string]interface{}{
+		"firstName": firstName,
+		"lastName":  lastName,
+		"email":     email,
+		"password":  password,
+	}
+
+	tmp, err := template.ParseFiles("./client/info.html")
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	tmp.Execute(w, data)
+}
+
 func (ah *accountHandler) Login(w http.ResponseWriter, r *http.Request) {
 	tmp, err := template.ParseFiles("./client/login.html")
 	if err != nil {
@@ -51,7 +82,7 @@ func (ah *accountHandler) Dashboard(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
-	
+
 	userName := ah.account[session.Values["email"].(string)]["First Name"]
 
 	data := map[string]interface{}{
