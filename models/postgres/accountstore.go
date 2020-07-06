@@ -3,9 +3,8 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
-	"time"
 
-	log "github.com/ctrlrsf/logdna"
+	logDNA "github.com/evalphobia/go-logdna/logdna"
 	"github.com/pkg/errors"
 
 	"know/db"
@@ -14,24 +13,24 @@ import (
 
 type accountStore struct {
 	db  *db.DB
-	log *log.Client
+	log *logDNA.Client
 }
 
 //NewAccountStore initiates a new instance of ConfigStore
-func NewAccountStore(db *db.DB, logDNAClient *log.Client) (models.AccountStore, error) {
+func NewAccountStore(db *db.DB, log *logDNA.Client) (models.AccountStore, error) {
 	if db == nil {
 		return nil, errors.New("account store new instance creation failed: invalid database")
 	}
 
 	return &accountStore{
 		db:  db,
-		log: logDNAClient,
+		log: log,
 	}, nil
 }
 
 func (as *accountStore) Save(account *models.Account) error {
 
-	as.log.Log(time.Now(), fmt.Sprintf("adding new account info: %s %s %s", account.Email, account.FirstName, account.LastName))
+	as.log.Info(fmt.Sprintf("adding new account info: %s %s %s", account.Email, account.FirstName, account.LastName))
 
 	if account == nil {
 		return models.ErrAddAccount
@@ -53,7 +52,7 @@ func (as *accountStore) Save(account *models.Account) error {
 
 func (as *accountStore) Delete(email string) error {
 
-	as.log.Log(time.Now(), fmt.Sprintf("deleting account %s", email))
+	as.log.Info(fmt.Sprintf("deleting account %s", email))
 
 	if email == "" {
 		return models.ErrDeleteAccount
@@ -74,7 +73,7 @@ func (as *accountStore) Delete(email string) error {
 
 func (as *accountStore) Get(email string) (*models.Account, error) {
 
-	as.log.Log(time.Now(), fmt.Sprintf("getting account %s", email))
+	as.log.Info(fmt.Sprintf("getting account %s", email))
 
 	if email == "" {
 		return nil, models.ErrGetAccount
@@ -99,7 +98,7 @@ func (as *accountStore) Get(email string) (*models.Account, error) {
 
 func (as *accountStore) GetAll() ([]models.Account, error) {
 
-	as.log.Log(time.Now(), "getting all account info")
+	as.log.Info("getting all account info")
 	query := `SELECT email, firstName, lastName, password FROM account_info`
 
 	rows, err := as.db.Query(query)

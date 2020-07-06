@@ -1,7 +1,7 @@
 module know
 
 require (
-	github.com/ctrlrsf/logdna v0.0.0-20160923145940-e8165275b7a7
+	github.com/evalphobia/go-logdna v0.1.0
 	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/go-chi/cors v1.1.1
 	github.com/gorilla/sessions v1.2.0

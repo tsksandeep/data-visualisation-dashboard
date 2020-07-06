@@ -4,9 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
-	"time"
 
-	log "github.com/ctrlrsf/logdna"
+	logDNA "github.com/evalphobia/go-logdna/logdna"
 
 	_ "github.com/lib/pq"
 )
@@ -17,19 +16,19 @@ type DB struct {
 }
 
 //NewDB creates new postgres db
-func NewDB(logDNAClient *log.Client) (*DB, error) {
+func NewDB(log *logDNA.Client) (*DB, error) {
 
-	logDNAClient.Log(time.Now(), "Opening postgres DB")
+	log.Info("Opening postgres DB")
 
 	postgresDB, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
 	if err != nil {
-		logDNAClient.Log(time.Now(), fmt.Sprintf("Error opening database: %q", err))
+		log.Err(fmt.Sprintf("Error opening database: %q", err))
 		return nil, err
 	}
 
 	_, err = postgresDB.Exec("CREATE TABLE IF NOT EXISTS account_info(email varchar(255), firstName varchar(40), lastName varchar(40), password varchar(40))")
 	if err != nil {
-		logDNAClient.Log(time.Now(), fmt.Sprintf("Error creating table: %q", err))
+		log.Err(fmt.Sprintf("Error creating table: %q", err))
 		return nil, err
 	}
 

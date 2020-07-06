@@ -3,9 +3,8 @@ package router
 import (
 	"net/http"
 	"os"
-	"time"
 
-	log "github.com/ctrlrsf/logdna"
+	logDNA "github.com/evalphobia/go-logdna/logdna"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 
@@ -18,8 +17,7 @@ import (
 // FileSystem is a custom file system handler to handle requests to React routes
 type FileSystem struct {
 	fs  http.FileSystem
-	log *log.Client
-}
+	log *logDNA.Client}
 
 // Open opens file
 func (fs FileSystem) Open(path string) (http.File, error) {
@@ -28,22 +26,22 @@ func (fs FileSystem) Open(path string) (http.File, error) {
 	f, err := fs.fs.Open(path)
 	if os.IsNotExist(err) {
 		if f, err = fs.fs.Open(index); err != nil {
-			fs.log.Log(time.Now(), err.Error())
+			fs.log.Err(err.Error())
 			return nil, err
 		}
 	} else if err != nil {
-		fs.log.Log(time.Now(), err.Error())
+		fs.log.Err(err.Error())
 		return nil, err
 	}
 
 	s, err := f.Stat()
 	if err != nil {
-		fs.log.Log(time.Now(), err.Error())
+		fs.log.Err(err.Error())
 		return nil, err
 	}
 	if s.IsDir() {
 		if _, err = fs.fs.Open(index); err != nil {
-			fs.log.Log(time.Now(), err.Error())
+			fs.log.Err(err.Error())
 			return nil, err
 		}
 	}
@@ -72,8 +70,8 @@ func NewRouter() *Router {
 }
 
 //AddRoutes adds routes to the router
-func (router *Router) AddRoutes(stores *models.Stores, logDNAClient *log.Client) {
-	accountHandler := account.New(stores, logDNAClient)
+func (router *Router) AddRoutes(stores *models.Stores, log *logDNA.Client) {
+	accountHandler := account.New(stores, log)
 	dataHandler := data.New()
 
 	router.Group(func(r chi.Router) {
@@ -103,6 +101,6 @@ func (router *Router) AddRoutes(stores *models.Stores, logDNAClient *log.Client)
 
 	// set up static file serving
 	fs := http.FileServer(FileSystem{fs: http.Dir("./client/"),
-		log: logDNAClient})
+		log: log})
 	router.With(middleware.UICacheControl).Handle("/*", fs)
 }

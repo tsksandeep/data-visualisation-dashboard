@@ -11,13 +11,13 @@ import (
 	"know/models/postgres"
 	"know/router"
 
-	log "github.com/ctrlrsf/logdna"
+	logDNA "github.com/evalphobia/go-logdna/logdna"
 )
 
 //CreateStores creates all the stores
-func createStores(postgresDB *db.DB, logDNAClient *log.Client) (*models.Stores, error) {
+func createStores(postgresDB *db.DB, log *logDNA.Client) (*models.Stores, error) {
 	var stores models.Stores
-	accountStore, err := postgres.NewAccountStore(postgresDB, logDNAClient)
+	accountStore, err := postgres.NewAccountStore(postgresDB, log)
 	if err != nil {
 		return nil, err
 	}
@@ -26,34 +26,36 @@ func createStores(postgresDB *db.DB, logDNAClient *log.Client) (*models.Stores, 
 	return &stores, nil
 }
 
-
 func main() {
 
-	logDNAConfig := log.Config{
-		APIKey:     os.Getenv("LOGDNA_KEY"),
-		LogFile:    "know.log",
-		FlushLimit: 10,
+	logDNAConfig := logDNA.Config{
+		APIKey:       os.Getenv("LOGDNA_KEY"),
+		App:          "know-dash",
+		Env:          "production",
+		MinimumLevel: logDNA.LogLevelInfo,
+		Sync:         false,
+		Debug:        true,
 	}
 
-	logDNAClient := log.NewClient(logDNAConfig)
-	defer logDNAClient.Close()
-
-	postgresDB, err := db.NewDB(logDNAClient)
+	log, err := logDNA.New(logDNAConfig)
 	if err != nil {
-		logDNAClient.Log(time.Now(), err.Error())
-		os.Exit(1)
+		panic(err)
+	}
+
+	postgresDB, err := db.NewDB(log)
+	if err != nil {
+		log.Fatal(err.Error())
 	}
 
 	defer postgresDB.Close()
 
-	stores, err := createStores(postgresDB, logDNAClient)
+	stores, err := createStores(postgresDB, log)
 	if err != nil {
-		logDNAClient.Log(time.Now(), fmt.Sprintf("creating stores failed: %s", err.Error()))
-		os.Exit(1)
+		log.Fatal(fmt.Sprintf("creating stores failed: %s", err.Error()))
 	}
 
 	apiRouter := router.NewRouter()
-	apiRouter.AddRoutes(stores, logDNAClient)
+	apiRouter.AddRoutes(stores, log)
 	port := ":" + os.Getenv("PORT")
 	server := http.Server{
 		ReadTimeout:  10 * time.Second,
@@ -62,9 +64,8 @@ func main() {
 		Handler:      http.TimeoutHandler(apiRouter, 10*time.Minute, "SERVICE UNAVAILABLE"),
 	}
 
-	logDNAClient.Log(time.Now(), fmt.Sprintf("Listening on %s", port))
+	log.Info(fmt.Sprintf("Listening on %s", port))
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		logDNAClient.Log(time.Now(), err.Error())
-		os.Exit(1)
+		log.Fatal(err.Error())
 	}
 }
