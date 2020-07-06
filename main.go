@@ -16,18 +16,14 @@ import (
 
 //CreateStores creates all the stores
 func createStores(postgresDB *db.DB, logDNAClient *log.Client) (*models.Stores, error) {
-
 	var stores models.Stores
-
 	accountStore, err := postgres.NewAccountStore(postgresDB, logDNAClient)
 	if err != nil {
 		return nil, err
 	}
 
 	stores.AccountStore = accountStore
-
 	return &stores, nil
-
 }
 
 
@@ -36,7 +32,7 @@ func main() {
 	logDNAConfig := log.Config{
 		APIKey:     os.Getenv("LOGDNA_KEY"),
 		LogFile:    "know.log",
-		FlushLimit: 1,
+		FlushLimit: 10,
 	}
 
 	logDNAClient := log.NewClient(logDNAConfig)
@@ -58,7 +54,7 @@ func main() {
 
 	apiRouter := router.NewRouter()
 	apiRouter.AddRoutes(stores, logDNAClient)
-	port := os.Getenv("PORT")
+	port := ":" + os.Getenv("PORT")
 	server := http.Server{
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 5 * time.Minute,

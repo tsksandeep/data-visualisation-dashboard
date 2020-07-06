@@ -41,7 +41,7 @@ func (as *accountStore) Save(account *models.Account) error {
 		return models.ErrAddAccount
 	}
 
-	sqlStmt := `INSERT OR REPLACE INTO account_info(email, firstName, lastName, password) VALUES ($1, $2, $3, $4)`
+	sqlStmt := `INSERT INTO account_info (email, firstName, lastName, password) VALUES ($1, $2, $3, $4)`
 
 	_, err := as.db.Exec(sqlStmt, account.Email, account.FirstName, account.LastName, account.Password)
 	if err != nil {
