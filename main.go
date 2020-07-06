@@ -57,7 +57,7 @@ func main() {
 	}
 
 	apiRouter := router.NewRouter()
-	apiRouter.AddRoutes(stores)
+	apiRouter.AddRoutes(stores, logDNAClient)
 	port := os.Getenv("PORT")
 	server := http.Server{
 		ReadTimeout:  10 * time.Second,

@@ -3,10 +3,11 @@ package router
 import (
 	"net/http"
 	"os"
+	"time"
 
+	log "github.com/ctrlrsf/logdna"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
-	log "github.com/ctrlrsf/logdna"
 
 	"know/handlers/account"
 	"know/handlers/data"
@@ -16,7 +17,8 @@ import (
 
 // FileSystem is a custom file system handler to handle requests to React routes
 type FileSystem struct {
-	fs http.FileSystem
+	fs  http.FileSystem
+	log *log.Client
 }
 
 // Open opens file
@@ -26,22 +28,22 @@ func (fs FileSystem) Open(path string) (http.File, error) {
 	f, err := fs.fs.Open(path)
 	if os.IsNotExist(err) {
 		if f, err = fs.fs.Open(index); err != nil {
-			log.Error(err)
+			fs.log.Log(time.Now(), err.Error())
 			return nil, err
 		}
 	} else if err != nil {
-		log.Error(err)
+		fs.log.Log(time.Now(), err.Error())
 		return nil, err
 	}
 
 	s, err := f.Stat()
 	if err != nil {
-		log.Error(err)
+		fs.log.Log(time.Now(), err.Error())
 		return nil, err
 	}
 	if s.IsDir() {
 		if _, err = fs.fs.Open(index); err != nil {
-			log.Error(err)
+			fs.log.Log(time.Now(), err.Error())
 			return nil, err
 		}
 	}
@@ -100,6 +102,7 @@ func (router *Router) AddRoutes(stores *models.Stores, logDNAClient *log.Client)
 	})
 
 	// set up static file serving
-	fs := http.FileServer(FileSystem{fs: http.Dir("./client/")})
+	fs := http.FileServer(FileSystem{fs: http.Dir("./client/"),
+		log: logDNAClient})
 	router.With(middleware.UICacheControl).Handle("/*", fs)
 }
