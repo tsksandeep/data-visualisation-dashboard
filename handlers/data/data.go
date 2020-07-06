@@ -1,9 +1,6 @@
 package data
 
 import (
-	"io"
-	"strconv"
-	"os"
 	"encoding/json"
 	"net/http"
 
@@ -56,11 +53,47 @@ func (dh *dataHandler) GetEmployeeData(w http.ResponseWriter, r *http.Request) {
 	employee4.Set("Start Date", "2011/07/25")
 	employee4.Set("Salary", "$170,750")
 
+	employee5 := orderedmap.New()
+	employee5.Set("Name", "Tiger Nixon")
+	employee5.Set("Position", "System Architect")
+	employee5.Set("Office", "Edinburgh")
+	employee5.Set("Age", "61")
+	employee5.Set("Start Date", "2011/04/25")
+	employee5.Set("Salary", "$320,800")
+
+	employee6 := orderedmap.New()
+	employee6.Set("Name", "Cedric Kelly")
+	employee6.Set("Position", "Senior Javascript Developer")
+	employee6.Set("Office", "Edinburgh")
+	employee6.Set("Age", "22")
+	employee6.Set("Start Date", "2012/03/29")
+	employee6.Set("Salary", "$433,060")
+
+	employee7 := orderedmap.New()
+	employee7.Set("Name", "Ashton Cox")
+	employee7.Set("Position", "Junior Technical Author")
+	employee7.Set("Office", "San Francisco")
+	employee7.Set("Age", "66")
+	employee7.Set("Start Date", "2009/01/12")
+	employee7.Set("Salary", "$86,000")
+
+	employee8 := orderedmap.New()
+	employee8.Set("Name", "Garrett Winters")
+	employee8.Set("Position", "Accountant")
+	employee8.Set("Office", "Tokyo")
+	employee8.Set("Age", "63")
+	employee8.Set("Start Date", "2011/07/25")
+	employee8.Set("Salary", "$170,750")
+
 	employeeData.Set("employee", []orderedmap.OrderedMap{
 		*employee1,
 		*employee2,
 		*employee3,
 		*employee4,
+		*employee5,
+		*employee6,
+		*employee7,
+		*employee8,
 	})
 
 	w.Header().Set("Content-Type", "application/json")
@@ -114,48 +147,156 @@ func (dh *dataHandler) GetProfitData(w http.ResponseWriter, r *http.Request) {
 }
 
 func (dh *dataHandler) DownloadToday(w http.ResponseWriter, r *http.Request) {
+
 	file := xlsx.NewFile()
 	sheet, err := file.AddSheet("Today")
 	if err != nil {
 		log.Error(err)
 	}
-	row := sheet.AddRow()
-	row.AddCell().Value = "Done"
 
-	err = file.Save("./excel/excel.xlsx")
+	dayData := orderedmap.New()
+
+	dayData.Set("Time", "Profit")
+	dayData.Set("10 AM", "30000")
+	dayData.Set("11 AM", "20000")
+	dayData.Set("12 PM", "45000")
+	dayData.Set("1 PM", "31000")
+	dayData.Set("2 PM", "15000")
+	dayData.Set("3 PM", "27000")
+	dayData.Set("4 PM", "34000")
+	dayData.Set("5 PM", "45000")
+	dayData.Set("6 PM", "35000")
+
+    for _, key := range dayData.Keys() {
+		row := sheet.AddRow()
+		data, ok := dayData.Get(key)
+		if !ok {
+			log.Error("error in getting the data")
+		}
+		row.AddCell().Value = key
+		row.AddCell().Value = data.(string)
+	}
+	
+	w.Header().Set("Content-Disposition", "attachment; filename=today.xlsx")
+
+	err = file.Write(w)
+	if err != nil {
+		log.Error(err)
+	}
+	return
+}
+
+func (dh *dataHandler) DownloadYesterday(w http.ResponseWriter, r *http.Request) {
+	
+	file := xlsx.NewFile()
+	sheet, err := file.AddSheet("Yesterday")
 	if err != nil {
 		log.Error(err)
 	}
 
-	Openfile, err := os.Open("./excel/excel.xlsx")
-	defer Openfile.Close()
-	if err != nil {
-		http.Error(w, "File not found.", 404)
-		return
+	dayData := orderedmap.New()
+
+	dayData.Set("Time", "Profit")
+	dayData.Set("10 AM", "23423")
+	dayData.Set("11 AM", "44422")
+	dayData.Set("12 PM", "43233")
+	dayData.Set("1 PM", "31000")
+	dayData.Set("2 PM", "15000")
+	dayData.Set("3 PM", "24555")
+	dayData.Set("4 PM", "53214")
+	dayData.Set("5 PM", "45000")
+	dayData.Set("6 PM", "35000")
+
+    for _, key := range dayData.Keys() {
+		row := sheet.AddRow()
+		data, ok := dayData.Get(key)
+		if !ok {
+			log.Error("error in getting the data")
+		}
+		row.AddCell().Value = key
+		row.AddCell().Value = data.(string)
 	}
+	
+	w.Header().Set("Content-Disposition", "attachment; filename=yesterday.xlsx")
 
-	FileHeader := make([]byte, 512)
-	//Copy the headers into the FileHeader buffer
-	Openfile.Read(FileHeader)
-	//Get content type of file
-	FileContentType := http.DetectContentType(FileHeader)
-
-	//Get the file size
-	FileStat, _ := Openfile.Stat()                     //Get info from file
-	FileSize := strconv.FormatInt(FileStat.Size(), 10) //Get file size as a string
-
-	//Send the headers
-	w.Header().Set("Content-Disposition", "attachment; filename=excel.xlsx")
-	w.Header().Set("Content-Type", FileContentType)
-	w.Header().Set("Content-Length", FileSize)
-
-	//Send the file
-	//We read 512 bytes from the file already, so we reset the offset back to 0
-	Openfile.Seek(0, 0)
-	io.Copy(w, Openfile) //'Copy' the file to the client
+	err = file.Write(w)
+	if err != nil {
+		log.Error(err)
+	}
 	return
 }
 
-func (dh *dataHandler) DownloadYesterday(w http.ResponseWriter, r *http.Request) {}
-func (dh *dataHandler) DownloadWeek(w http.ResponseWriter, r *http.Request)      {}
-func (dh *dataHandler) DownloadMonth(w http.ResponseWriter, r *http.Request)     {}
+func (dh *dataHandler) DownloadWeek(w http.ResponseWriter, r *http.Request) {
+	
+	file := xlsx.NewFile()
+	sheet, err := file.AddSheet("Week")
+	if err != nil {
+		log.Error(err)
+	}
+
+	dayData := orderedmap.New()
+
+	dayData.Set("Day", "Profit")
+	dayData.Set("June 1", "30000")
+	dayData.Set("June 2", "20000")
+	dayData.Set("June 3", "45000")
+	dayData.Set("June 4", "31000")
+	dayData.Set("June 5", "15000")
+	dayData.Set("June 6", "27000")
+	dayData.Set("June 7", "34000")
+
+    for _, key := range dayData.Keys() {
+		row := sheet.AddRow()
+		data, ok := dayData.Get(key)
+		if !ok {
+			log.Error("error in getting the data")
+		}
+		row.AddCell().Value = key
+		row.AddCell().Value = data.(string)
+	}
+	
+	w.Header().Set("Content-Disposition", "attachment; filename=week.xlsx")
+
+	err = file.Write(w)
+	if err != nil {
+		log.Error(err)
+	}
+	return
+}
+
+func (dh *dataHandler) DownloadMonth(w http.ResponseWriter, r *http.Request) {
+	
+	file := xlsx.NewFile()
+	sheet, err := file.AddSheet("Month")
+	if err != nil {
+		log.Error(err)
+	}
+
+	monthData := orderedmap.New()
+
+	monthData.Set("Month","Profit")
+	monthData.Set("January", "30000")
+	monthData.Set("February", "20000")
+	monthData.Set("March", "45000")
+	monthData.Set("April", "27000")
+	monthData.Set("May", "15000")
+	monthData.Set("June", "35000")
+
+    for _, key := range monthData.Keys() {
+		row := sheet.AddRow()
+		data, ok := monthData.Get(key)
+		if !ok {
+			log.Error("error in getting the data")
+		}
+		row.AddCell().Value = key
+		row.AddCell().Value = data.(string)
+	}
+	
+	w.Header().Set("Content-Disposition", "attachment; filename=month.xlsx")
+
+	err = file.Write(w)
+	if err != nil {
+		log.Error(err)
+	}
+	return
+}
