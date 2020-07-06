@@ -1,4 +1,6 @@
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
+github.com/ctrlrsf/logdna v0.0.0-20160923145940-e8165275b7a7 h1:DU0k89A6benrlmuT38UGvgXfZkn7Hiry+wB+958EK14=
+github.com/ctrlrsf/logdna v0.0.0-20160923145940-e8165275b7a7/go.mod h1:hlidOPnWBH4U3ygQaGDmU5RHzH3Z/eon7HItwSUVAhE=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

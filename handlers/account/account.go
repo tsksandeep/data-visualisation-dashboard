@@ -3,9 +3,10 @@ package account
 import (
 	"html/template"
 	"net/http"
+	"time"
 
+	log "github.com/ctrlrsf/logdna"
 	"github.com/gorilla/sessions"
-	log "github.com/sirupsen/logrus"
 
 	"know/handlers"
 	"know/models"
@@ -15,19 +16,21 @@ var store = sessions.NewCookieStore([]byte("mysession"))
 
 type accountHandler struct {
 	stores *models.Stores
+	log    *log.Client
 }
 
 //New Account handler
-func New(stores *models.Stores) handlers.AccountHandler {
+func New(stores *models.Stores, logDNAClient *log.Client) handlers.AccountHandler {
 	return &accountHandler{
 		stores: stores,
+		log:    logDNAClient,
 	}
 }
 
 func (ah *accountHandler) Info(w http.ResponseWriter, r *http.Request) {
 	session, err := store.Get(r, "mysession")
 	if err != nil {
-		log.Error("unable to get session")
+		ah.log.Log(time.Now(), "unable to get session")
 	}
 
 	if session.Values["email"] == nil {
@@ -37,7 +40,7 @@ func (ah *accountHandler) Info(w http.ResponseWriter, r *http.Request) {
 
 	accountInfo, err := ah.stores.AccountStore.Get(session.Values["email"].(string))
 	if err != nil {
-		log.Error("unable to get account")
+		ah.log.Log(time.Now(), "unable to get account")
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
@@ -51,7 +54,7 @@ func (ah *accountHandler) Info(w http.ResponseWriter, r *http.Request) {
 
 	tmp, err := template.ParseFiles("./client/info.html")
 	if err != nil {
-		log.Error(err)
+		ah.log.Log(time.Now(), err.Error())
 		return
 	}
 	tmp.Execute(w, data)
@@ -60,7 +63,7 @@ func (ah *accountHandler) Info(w http.ResponseWriter, r *http.Request) {
 func (ah *accountHandler) Login(w http.ResponseWriter, r *http.Request) {
 	tmp, err := template.ParseFiles("./client/login.html")
 	if err != nil {
-		log.Error(err)
+		ah.log.Log(time.Now(), err.Error())
 		return
 	}
 	tmp.Execute(w, nil)
@@ -69,7 +72,7 @@ func (ah *accountHandler) Login(w http.ResponseWriter, r *http.Request) {
 func (ah *accountHandler) Register(w http.ResponseWriter, r *http.Request) {
 	tmp, err := template.ParseFiles("./client/register.html")
 	if err != nil {
-		log.Error(err)
+		ah.log.Log(time.Now(), err.Error())
 		return
 	}
 	tmp.Execute(w, nil)
@@ -78,7 +81,7 @@ func (ah *accountHandler) Register(w http.ResponseWriter, r *http.Request) {
 func (ah *accountHandler) Dashboard(w http.ResponseWriter, r *http.Request) {
 	session, err := store.Get(r, "mysession")
 	if err != nil {
-		log.Error("unable to get session")
+		ah.log.Log(time.Now(), "unable to get session")
 	}
 
 	if session.Values["email"] == nil {
@@ -88,7 +91,7 @@ func (ah *accountHandler) Dashboard(w http.ResponseWriter, r *http.Request) {
 
 	accountInfo, err := ah.stores.AccountStore.Get(session.Values["email"].(string))
 	if err != nil {
-		log.Error("unable to get account")
+		ah.log.Log(time.Now(), "unable to get account")
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
@@ -99,7 +102,7 @@ func (ah *accountHandler) Dashboard(w http.ResponseWriter, r *http.Request) {
 
 	tmp, err := template.ParseFiles("./client/dashboard.html")
 	if err != nil {
-		log.Error(err)
+		ah.log.Log(time.Now(), err.Error())
 		return
 	}
 	tmp.Execute(w, data)
@@ -109,7 +112,7 @@ func (ah *accountHandler) Welcome(w http.ResponseWriter, r *http.Request) {
 
 	tmp, err := template.ParseFiles("./client/index.html")
 	if err != nil {
-		log.Error(err)
+		ah.log.Log(time.Now(), err.Error())
 		return
 	}
 
@@ -124,14 +127,14 @@ func (ah *accountHandler) PostLogin(w http.ResponseWriter, r *http.Request) {
 
 	accountInfo, err := ah.stores.AccountStore.Get(email)
 	if err != nil || accountInfo.Password != password {
-		log.Error("unable to get account")
+		ah.log.Log(time.Now(), "unable to get account")
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
 
 	session, err := store.Get(r, "mysession")
 	if err != nil {
-		log.Error("unable to get session")
+		ah.log.Log(time.Now(), "unable to get session")
 		return
 	}
 
@@ -155,7 +158,7 @@ func (ah *accountHandler) PostRegister(w http.ResponseWriter, r *http.Request) {
 
 	err := ah.stores.AccountStore.Save(&accountInfo)
 	if err != nil {
-		log.Error("unable to save account")
+		ah.log.Log(time.Now(), "unable to save account")
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}

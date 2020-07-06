@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
-	log "github.com/sirupsen/logrus"
+	log "github.com/ctrlrsf/logdna"
 
 	"know/handlers/account"
 	"know/handlers/data"
@@ -70,8 +70,8 @@ func NewRouter() *Router {
 }
 
 //AddRoutes adds routes to the router
-func (router *Router) AddRoutes(stores *models.Stores) {
-	accountHandler := account.New(stores)
+func (router *Router) AddRoutes(stores *models.Stores, logDNAClient *log.Client) {
+	accountHandler := account.New(stores, logDNAClient)
 	dataHandler := data.New()
 
 	router.Group(func(r chi.Router) {

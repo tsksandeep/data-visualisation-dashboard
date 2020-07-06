@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -10,15 +11,15 @@ import (
 	"know/models/postgres"
 	"know/router"
 
-	log "github.com/sirupsen/logrus"
+	log "github.com/ctrlrsf/logdna"
 )
 
 //CreateStores creates all the stores
-func createStores(postgresDB *db.DB) (*models.Stores, error) {
+func createStores(postgresDB *db.DB, logDNAClient *log.Client) (*models.Stores, error) {
 
 	var stores models.Stores
 
-	accountStore, err := postgres.NewAccountStore(postgresDB)
+	accountStore, err := postgres.NewAccountStore(postgresDB, logDNAClient)
 	if err != nil {
 		return nil, err
 	}
@@ -29,43 +30,45 @@ func createStores(postgresDB *db.DB) (*models.Stores, error) {
 
 }
 
-//GetPort gets the port from heroku
-func getPort() string {
-	var port = os.Getenv("PORT")
-	// Set a default port if there is nothing in the environment
-	if port == "" {
-		port = "3000"
-		log.Println("INFO: No PORT environment variable detected, defaulting to " + port)
-	}
-	return ":" + port
-}
 
 func main() {
 
-	postgresDB, err := db.NewDB()
+	logDNAConfig := log.Config{
+		APIKey:     os.Getenv("LOGDNA_KEY"),
+		LogFile:    "know.log",
+		FlushLimit: 1,
+	}
+
+	logDNAClient := log.NewClient(logDNAConfig)
+	defer logDNAClient.Close()
+
+	postgresDB, err := db.NewDB(logDNAClient)
 	if err != nil {
-		log.Fatal(err)
+		logDNAClient.Log(time.Now(), err.Error())
+		os.Exit(1)
 	}
 
 	defer postgresDB.Close()
 
-	stores, err := createStores(postgresDB)
+	stores, err := createStores(postgresDB, logDNAClient)
 	if err != nil {
-		log.Fatal("creating stores failed: ", err)
+		logDNAClient.Log(time.Now(), fmt.Sprintf("creating stores failed: %s", err.Error()))
+		os.Exit(1)
 	}
 
 	apiRouter := router.NewRouter()
 	apiRouter.AddRoutes(stores)
-
+	port := os.Getenv("PORT")
 	server := http.Server{
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 5 * time.Minute,
-		Addr:         getPort(),
+		Addr:         port,
 		Handler:      http.TimeoutHandler(apiRouter, 10*time.Minute, "SERVICE UNAVAILABLE"),
 	}
 
-	log.Println("Listening on :3000")
+	logDNAClient.Log(time.Now(), fmt.Sprintf("Listening on %s", port))
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		log.Fatal(err)
+		logDNAClient.Log(time.Now(), err.Error())
+		os.Exit(1)
 	}
 }

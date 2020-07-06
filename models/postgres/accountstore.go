@@ -2,9 +2,11 @@ package postgres
 
 import (
 	"database/sql"
+	"fmt"
+	"time"
 
+	log "github.com/ctrlrsf/logdna"
 	"github.com/pkg/errors"
-	log "github.com/sirupsen/logrus"
 
 	"know/db"
 	"know/models"
@@ -12,11 +14,11 @@ import (
 
 type accountStore struct {
 	*db.DB
+	log *log.Client
 }
 
 //NewAccountStore initiates a new instance of ConfigStore
-func NewAccountStore(db *db.DB) (models.AccountStore, error) {
-
+func NewAccountStore(db *db.DB, logDNAClient *log.Client) (models.AccountStore, error) {
 	if db == nil {
 		return nil, errors.New("account store new instance creation failed: invalid database")
 	}
@@ -26,7 +28,7 @@ func NewAccountStore(db *db.DB) (models.AccountStore, error) {
 
 func (as *accountStore) Save(account *models.Account) error {
 
-	log.Debug("adding new account info: " + account.Email + " " + account.FirstName + " " + account.LastName)
+	as.log.Log(time.Now(), fmt.Sprintf("adding new account info: %s %s %s", account.Email, account.FirstName, account.LastName))
 
 	if account == nil {
 		return models.ErrAddAccount
@@ -48,7 +50,7 @@ func (as *accountStore) Save(account *models.Account) error {
 
 func (as *accountStore) Delete(email string) error {
 
-	log.Debug("deleteing account " + email)
+	as.log.Log(time.Now(), fmt.Sprintf("deleting account %s", email))
 
 	if email == "" {
 		return models.ErrDeleteAccount
@@ -69,7 +71,7 @@ func (as *accountStore) Delete(email string) error {
 
 func (as *accountStore) Get(email string) (*models.Account, error) {
 
-	log.Debug("get config " + email)
+	as.log.Log(time.Now(), fmt.Sprintf("getting account %s", email))
 
 	if email == "" {
 		return nil, models.ErrGetAccount
@@ -94,7 +96,7 @@ func (as *accountStore) Get(email string) (*models.Account, error) {
 
 func (as *accountStore) GetAll() ([]models.Account, error) {
 
-	log.Debug("get all account info")
+	as.log.Log(time.Now(), "getting all account info")
 	query := `SELECT email, firstName, lastName, password FROM account_info`
 
 	rows, err := as.Query(query)

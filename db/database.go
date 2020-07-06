@@ -2,9 +2,11 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
 	"os"
+	"time"
 
-	log "github.com/sirupsen/logrus"
+	log "github.com/ctrlrsf/logdna"
 )
 
 //DB represents postgres DB
@@ -13,18 +15,20 @@ type DB struct {
 }
 
 //NewDB creates new postgres db
-func NewDB() (*DB, error) {
+func NewDB(logDNAClient *log.Client) (*DB, error) {
 
-	log.Debug("Opening postgres DB")
+	logDNAClient.Log(time.Now(), "Opening postgres DB")
 
 	postgresDB, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
 	if err != nil {
-		log.Fatalf("Error opening database: %q", err)
+		logDNAClient.Log(time.Now(), fmt.Sprintf("Error opening database: %q", err))
+		return nil, err
 	}
 
 	_, err = postgresDB.Exec("CREATE TABLE IF NOT EXISTS account_info(email varchar(255),firstName varchar(40), lastName varchar(40), password varchar(40))")
 	if err != nil {
-		log.Fatalf("Error creating table: %q", err)
+		logDNAClient.Log(time.Now(), fmt.Sprintf("Error creating table: %q", err))
+		return nil, err
 	}
 
 	return &DB{DB: postgresDB}, nil
