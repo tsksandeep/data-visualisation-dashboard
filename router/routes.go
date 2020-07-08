@@ -73,7 +73,7 @@ func NewRouter() *Router {
 //AddRoutes adds routes to the router
 func (router *Router) AddRoutes(stores *models.Stores, log *logger.Logger) {
 	accountHandler := account.New(stores, log)
-	dataHandler := data.New()
+	dataHandler := data.New(log)
 
 	router.Group(func(r chi.Router) {
 		//routes to account handler

@@ -7,15 +7,19 @@ import (
 	"know/handlers"
 
 	"github.com/iancoleman/orderedmap"
-	log "github.com/sirupsen/logrus"
+	"github.com/logdna/logdna-go/logger"
 	"github.com/tealeg/xlsx"
 )
 
-type dataHandler struct{}
+type dataHandler struct{
+	log *logger.Logger
+}
 
 //New data handler
-func New() handlers.DataHandler {
-	return &dataHandler{}
+func New(log *logger.Logger) handlers.DataHandler {
+	return &dataHandler{
+		log: log,
+	}
 }
 
 func (dh *dataHandler) GetEmployeeData(w http.ResponseWriter, r *http.Request) {
@@ -151,10 +155,10 @@ func (dh *dataHandler) DownloadToday(w http.ResponseWriter, r *http.Request) {
 	file := xlsx.NewFile()
 	sheet, err := file.AddSheet("Today")
 	if err != nil {
-		log.Error(err)
+		dh.log.Error(err.Error())
 	}
 
-	log.Info("download today clicked by user")
+	dh.log.Info("download today clicked by user")
 
 	dayData := orderedmap.New()
 
@@ -169,34 +173,34 @@ func (dh *dataHandler) DownloadToday(w http.ResponseWriter, r *http.Request) {
 	dayData.Set("5 PM", "45000")
 	dayData.Set("6 PM", "35000")
 
-    for _, key := range dayData.Keys() {
+	for _, key := range dayData.Keys() {
 		row := sheet.AddRow()
 		data, ok := dayData.Get(key)
 		if !ok {
-			log.Error("error in getting the data")
+			dh.log.Error("error in getting the data")
 		}
 		row.AddCell().Value = key
 		row.AddCell().Value = data.(string)
 	}
-	
+
 	w.Header().Set("Content-Disposition", "attachment; filename=today.xlsx")
 
 	err = file.Write(w)
 	if err != nil {
-		log.Error(err)
+		dh.log.Error(err.Error())
 	}
 	return
 }
 
 func (dh *dataHandler) DownloadYesterday(w http.ResponseWriter, r *http.Request) {
-	
+
 	file := xlsx.NewFile()
 	sheet, err := file.AddSheet("Yesterday")
 	if err != nil {
-		log.Error(err)
+		dh.log.Error(err.Error())
 	}
 
-	log.Info("download today clicked by user")
+	dh.log.Info("download yesterday clicked by user")
 
 	dayData := orderedmap.New()
 
@@ -211,34 +215,34 @@ func (dh *dataHandler) DownloadYesterday(w http.ResponseWriter, r *http.Request)
 	dayData.Set("5 PM", "45000")
 	dayData.Set("6 PM", "35000")
 
-    for _, key := range dayData.Keys() {
+	for _, key := range dayData.Keys() {
 		row := sheet.AddRow()
 		data, ok := dayData.Get(key)
 		if !ok {
-			log.Error("error in getting the data")
+			dh.log.Error("error in getting the data")
 		}
 		row.AddCell().Value = key
 		row.AddCell().Value = data.(string)
 	}
-	
+
 	w.Header().Set("Content-Disposition", "attachment; filename=yesterday.xlsx")
 
 	err = file.Write(w)
 	if err != nil {
-		log.Error(err)
+		dh.log.Error(err.Error())
 	}
 	return
 }
 
 func (dh *dataHandler) DownloadWeek(w http.ResponseWriter, r *http.Request) {
-	
+
 	file := xlsx.NewFile()
 	sheet, err := file.AddSheet("Week")
 	if err != nil {
-		log.Error(err)
+		dh.log.Error(err.Error())
 	}
 
-	log.Info("download today clicked by user")
+	dh.log.Info("download week clicked by user")
 
 	dayData := orderedmap.New()
 
@@ -251,38 +255,38 @@ func (dh *dataHandler) DownloadWeek(w http.ResponseWriter, r *http.Request) {
 	dayData.Set("June 6", "27000")
 	dayData.Set("June 7", "34000")
 
-    for _, key := range dayData.Keys() {
+	for _, key := range dayData.Keys() {
 		row := sheet.AddRow()
 		data, ok := dayData.Get(key)
 		if !ok {
-			log.Error("error in getting the data")
+			dh.log.Error("error in getting the data")
 		}
 		row.AddCell().Value = key
 		row.AddCell().Value = data.(string)
 	}
-	
+
 	w.Header().Set("Content-Disposition", "attachment; filename=week.xlsx")
 
 	err = file.Write(w)
 	if err != nil {
-		log.Error(err)
+		dh.log.Error(err.Error())
 	}
 	return
 }
 
 func (dh *dataHandler) DownloadMonth(w http.ResponseWriter, r *http.Request) {
-	
+
 	file := xlsx.NewFile()
 	sheet, err := file.AddSheet("Month")
 	if err != nil {
-		log.Error(err)
+		dh.log.Error(err.Error())
 	}
 
-	log.Info("download today clicked by user")
+	dh.log.Info("download month clicked by user")
 
 	monthData := orderedmap.New()
 
-	monthData.Set("Month","Profit")
+	monthData.Set("Month", "Profit")
 	monthData.Set("January", "30000")
 	monthData.Set("February", "20000")
 	monthData.Set("March", "45000")
@@ -290,21 +294,21 @@ func (dh *dataHandler) DownloadMonth(w http.ResponseWriter, r *http.Request) {
 	monthData.Set("May", "15000")
 	monthData.Set("June", "35000")
 
-    for _, key := range monthData.Keys() {
+	for _, key := range monthData.Keys() {
 		row := sheet.AddRow()
 		data, ok := monthData.Get(key)
 		if !ok {
-			log.Error("error in getting the data")
+			dh.log.Error("error in getting the data")
 		}
 		row.AddCell().Value = key
 		row.AddCell().Value = data.(string)
 	}
-	
+
 	w.Header().Set("Content-Disposition", "attachment; filename=month.xlsx")
 
 	err = file.Write(w)
 	if err != nil {
-		log.Error(err)
+		dh.log.Error(err.Error())
 	}
 	return
 }
