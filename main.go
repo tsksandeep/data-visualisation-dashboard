@@ -34,6 +34,7 @@ func main() {
 		App:           "know-dash",
 		Env:           "production",
 		FlushInterval: 1 * time.Second,
+		MaxBufferLen:  1,
 	}, os.Getenv("LOGDNA_KEY"))
 
 	defer log.Close()
