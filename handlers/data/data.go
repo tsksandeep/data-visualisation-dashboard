@@ -154,6 +154,8 @@ func (dh *dataHandler) DownloadToday(w http.ResponseWriter, r *http.Request) {
 		log.Error(err)
 	}
 
+	log.Info("download today clicked by user")
+
 	dayData := orderedmap.New()
 
 	dayData.Set("Time", "Profit")
@@ -193,6 +195,8 @@ func (dh *dataHandler) DownloadYesterday(w http.ResponseWriter, r *http.Request)
 	if err != nil {
 		log.Error(err)
 	}
+
+	log.Info("download today clicked by user")
 
 	dayData := orderedmap.New()
 
@@ -234,6 +238,8 @@ func (dh *dataHandler) DownloadWeek(w http.ResponseWriter, r *http.Request) {
 		log.Error(err)
 	}
 
+	log.Info("download today clicked by user")
+
 	dayData := orderedmap.New()
 
 	dayData.Set("Day", "Profit")
@@ -271,6 +277,8 @@ func (dh *dataHandler) DownloadMonth(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Error(err)
 	}
+
+	log.Info("download today clicked by user")
 
 	monthData := orderedmap.New()
 
