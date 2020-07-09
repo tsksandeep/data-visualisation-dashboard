@@ -37,6 +37,10 @@ func (router *Router) AddRoutes(stores *models.Stores, log *logger.Logger) {
 	dataHandler := data.New(log)
 
 	router.Group(func(r chi.Router) {
+
+		//Cache control middleware
+		r.Use(middleware.UICacheControl)
+
 		//routes to account handler
 		r.Get("/info", accountHandler.Info)
 		r.Get("/login", accountHandler.Login)
@@ -59,5 +63,5 @@ func (router *Router) AddRoutes(stores *models.Stores, log *logger.Logger) {
 
 		//default
 		r.Get("/*", accountHandler.Welcome)
-	}).Use(middleware.UICacheControl)
+	})
 }
