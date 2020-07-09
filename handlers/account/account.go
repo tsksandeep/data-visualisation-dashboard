@@ -1,11 +1,12 @@
 package account
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 
-	"github.com/logdna/logdna-go/logger"
 	"github.com/gorilla/sessions"
+	"github.com/logdna/logdna-go/logger"
 
 	"know/handlers"
 	"know/models"
@@ -26,10 +27,12 @@ func New(stores *models.Stores, log *logger.Logger) handlers.AccountHandler {
 	}
 }
 
+
+
 func (ah *accountHandler) Info(w http.ResponseWriter, r *http.Request) {
 	session, err := store.Get(r, "mysession")
 	if err != nil {
-		ah.log.Error("unable to get session")
+		ah.log.Error(fmt.Sprintf("%s : unable to get session", handlers.ReadUserIP(r)))
 	}
 
 	if session.Values["email"] == nil {
@@ -39,7 +42,7 @@ func (ah *accountHandler) Info(w http.ResponseWriter, r *http.Request) {
 
 	accountInfo, err := ah.stores.AccountStore.Get(session.Values["email"].(string))
 	if err != nil {
-		ah.log.Error("unable to get account")
+		ah.log.Error(fmt.Sprintf("%s : unable to get account", handlers.ReadUserIP(r)))
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
@@ -53,7 +56,7 @@ func (ah *accountHandler) Info(w http.ResponseWriter, r *http.Request) {
 
 	tmp, err := template.ParseFiles("./client/info.html")
 	if err != nil {
-		ah.log.Error(err.Error())
+		ah.log.Error(fmt.Sprintf("%s : %s", handlers.ReadUserIP(r), err.Error()))
 		return
 	}
 	tmp.Execute(w, data)
@@ -62,7 +65,7 @@ func (ah *accountHandler) Info(w http.ResponseWriter, r *http.Request) {
 func (ah *accountHandler) Login(w http.ResponseWriter, r *http.Request) {
 	tmp, err := template.ParseFiles("./client/login.html")
 	if err != nil {
-		ah.log.Error(err.Error())
+		ah.log.Error(fmt.Sprintf("%s : %s", handlers.ReadUserIP(r), err.Error()))
 		return
 	}
 	tmp.Execute(w, nil)
@@ -71,7 +74,7 @@ func (ah *accountHandler) Login(w http.ResponseWriter, r *http.Request) {
 func (ah *accountHandler) Register(w http.ResponseWriter, r *http.Request) {
 	tmp, err := template.ParseFiles("./client/register.html")
 	if err != nil {
-		ah.log.Error(err.Error())
+		ah.log.Error(fmt.Sprintf("%s : %s", handlers.ReadUserIP(r), err.Error()))
 		return
 	}
 	tmp.Execute(w, nil)
@@ -80,7 +83,7 @@ func (ah *accountHandler) Register(w http.ResponseWriter, r *http.Request) {
 func (ah *accountHandler) Dashboard(w http.ResponseWriter, r *http.Request) {
 	session, err := store.Get(r, "mysession")
 	if err != nil {
-		ah.log.Error("unable to get session")
+		ah.log.Error(fmt.Sprintf("%s : unable to get session", handlers.ReadUserIP(r)))
 	}
 
 	if session.Values["email"] == nil {
@@ -90,7 +93,7 @@ func (ah *accountHandler) Dashboard(w http.ResponseWriter, r *http.Request) {
 
 	accountInfo, err := ah.stores.AccountStore.Get(session.Values["email"].(string))
 	if err != nil {
-		ah.log.Error("unable to get account")
+		ah.log.Error(fmt.Sprintf("%s : unable to get account", handlers.ReadUserIP(r)))
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
@@ -101,7 +104,7 @@ func (ah *accountHandler) Dashboard(w http.ResponseWriter, r *http.Request) {
 
 	tmp, err := template.ParseFiles("./client/dashboard.html")
 	if err != nil {
-		ah.log.Error(err.Error())
+		ah.log.Error(fmt.Sprintf("%s : %s", handlers.ReadUserIP(r), err.Error()))
 		return
 	}
 	tmp.Execute(w, data)
@@ -111,7 +114,7 @@ func (ah *accountHandler) Welcome(w http.ResponseWriter, r *http.Request) {
 
 	tmp, err := template.ParseFiles("./client/index.html")
 	if err != nil {
-		ah.log.Error(err.Error())
+		ah.log.Error(fmt.Sprintf("%s : %s", handlers.ReadUserIP(r), err.Error()))
 		return
 	}
 
@@ -126,14 +129,14 @@ func (ah *accountHandler) PostLogin(w http.ResponseWriter, r *http.Request) {
 
 	accountInfo, err := ah.stores.AccountStore.Get(email)
 	if err != nil || accountInfo.Password != password {
-		ah.log.Error("unable to get account")
+		ah.log.Error(fmt.Sprintf("%s : unable to get account", handlers.ReadUserIP(r)))
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
 
 	session, err := store.Get(r, "mysession")
 	if err != nil {
-		ah.log.Error("unable to get session")
+		ah.log.Error(fmt.Sprintf("%s : unable to get session", handlers.ReadUserIP(r)))
 		return
 	}
 
@@ -157,7 +160,7 @@ func (ah *accountHandler) PostRegister(w http.ResponseWriter, r *http.Request) {
 
 	err := ah.stores.AccountStore.Save(&accountInfo)
 	if err != nil {
-		ah.log.Error("unable to save account")
+		ah.log.Error(fmt.Sprintf("%s : unable to save account", handlers.ReadUserIP(r)))
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}

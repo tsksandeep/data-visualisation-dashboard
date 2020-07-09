@@ -13,6 +13,7 @@ type AccountHandler interface {
 	PostRegister(w http.ResponseWriter, r *http.Request)
 }
 
+//DataHandler is for Data serving
 type DataHandler interface {
 	GetEmployeeData(w http.ResponseWriter, r *http.Request)
 	GetMonthData(w http.ResponseWriter, r *http.Request)
@@ -23,4 +24,16 @@ type DataHandler interface {
 	DownloadYesterday(w http.ResponseWriter, r *http.Request)
 	DownloadWeek(w http.ResponseWriter, r *http.Request)
 	DownloadMonth(w http.ResponseWriter, r *http.Request)
+}
+
+//ReadUserIP reads IP address from handlers
+func ReadUserIP(r *http.Request) string {
+	IPAddress := r.Header.Get("X-Real-Ip")
+	if IPAddress == "" {
+		IPAddress = r.Header.Get("X-Forwarded-For")
+	}
+	if IPAddress == "" {
+		IPAddress = r.RemoteAddr
+	}
+	return IPAddress
 }

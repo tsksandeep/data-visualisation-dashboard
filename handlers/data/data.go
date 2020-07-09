@@ -2,6 +2,7 @@ package data
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"know/handlers"
@@ -11,7 +12,7 @@ import (
 	"github.com/tealeg/xlsx"
 )
 
-type dataHandler struct{
+type dataHandler struct {
 	log *logger.Logger
 }
 
@@ -155,10 +156,10 @@ func (dh *dataHandler) DownloadToday(w http.ResponseWriter, r *http.Request) {
 	file := xlsx.NewFile()
 	sheet, err := file.AddSheet("Today")
 	if err != nil {
-		dh.log.Error(err.Error())
+		dh.log.Error(fmt.Sprintf("%s : %s", handlers.ReadUserIP(r), err.Error()))
 	}
 
-	dh.log.Info("download today clicked by user")
+	dh.log.Info(fmt.Sprintf("%s : download today clicked by user", handlers.ReadUserIP(r)))
 
 	dayData := orderedmap.New()
 
@@ -177,7 +178,7 @@ func (dh *dataHandler) DownloadToday(w http.ResponseWriter, r *http.Request) {
 		row := sheet.AddRow()
 		data, ok := dayData.Get(key)
 		if !ok {
-			dh.log.Error("error in getting the data")
+			dh.log.Error(fmt.Sprintf("%s : error in getting the data", handlers.ReadUserIP(r)))
 		}
 		row.AddCell().Value = key
 		row.AddCell().Value = data.(string)
@@ -187,7 +188,7 @@ func (dh *dataHandler) DownloadToday(w http.ResponseWriter, r *http.Request) {
 
 	err = file.Write(w)
 	if err != nil {
-		dh.log.Error(err.Error())
+		dh.log.Error(fmt.Sprintf("%s : %s", handlers.ReadUserIP(r), err.Error()))
 	}
 	return
 }
@@ -197,10 +198,10 @@ func (dh *dataHandler) DownloadYesterday(w http.ResponseWriter, r *http.Request)
 	file := xlsx.NewFile()
 	sheet, err := file.AddSheet("Yesterday")
 	if err != nil {
-		dh.log.Error(err.Error())
+		dh.log.Error(fmt.Sprintf("%s : %s", handlers.ReadUserIP(r), err.Error()))
 	}
 
-	dh.log.Info("download yesterday clicked by user")
+	dh.log.Info(fmt.Sprintf("%s : download yesterday clicked by user", handlers.ReadUserIP(r)))
 
 	dayData := orderedmap.New()
 
@@ -219,7 +220,7 @@ func (dh *dataHandler) DownloadYesterday(w http.ResponseWriter, r *http.Request)
 		row := sheet.AddRow()
 		data, ok := dayData.Get(key)
 		if !ok {
-			dh.log.Error("error in getting the data")
+			dh.log.Error(fmt.Sprintf("%s : error in getting the data", handlers.ReadUserIP(r)))
 		}
 		row.AddCell().Value = key
 		row.AddCell().Value = data.(string)
@@ -229,7 +230,7 @@ func (dh *dataHandler) DownloadYesterday(w http.ResponseWriter, r *http.Request)
 
 	err = file.Write(w)
 	if err != nil {
-		dh.log.Error(err.Error())
+		dh.log.Error(fmt.Sprintf("%s : %s", handlers.ReadUserIP(r), err.Error()))
 	}
 	return
 }
@@ -239,10 +240,10 @@ func (dh *dataHandler) DownloadWeek(w http.ResponseWriter, r *http.Request) {
 	file := xlsx.NewFile()
 	sheet, err := file.AddSheet("Week")
 	if err != nil {
-		dh.log.Error(err.Error())
+		dh.log.Error(fmt.Sprintf("%s : %s", handlers.ReadUserIP(r), err.Error()))
 	}
 
-	dh.log.Info("download week clicked by user")
+	dh.log.Info(fmt.Sprintf("%s : download week clicked by user", handlers.ReadUserIP(r)))
 
 	dayData := orderedmap.New()
 
@@ -259,7 +260,7 @@ func (dh *dataHandler) DownloadWeek(w http.ResponseWriter, r *http.Request) {
 		row := sheet.AddRow()
 		data, ok := dayData.Get(key)
 		if !ok {
-			dh.log.Error("error in getting the data")
+			dh.log.Error(fmt.Sprintf("%s : error in getting the data", handlers.ReadUserIP(r)))
 		}
 		row.AddCell().Value = key
 		row.AddCell().Value = data.(string)
@@ -269,7 +270,7 @@ func (dh *dataHandler) DownloadWeek(w http.ResponseWriter, r *http.Request) {
 
 	err = file.Write(w)
 	if err != nil {
-		dh.log.Error(err.Error())
+		dh.log.Error(fmt.Sprintf("%s : %s", handlers.ReadUserIP(r), err.Error()))
 	}
 	return
 }
@@ -279,10 +280,10 @@ func (dh *dataHandler) DownloadMonth(w http.ResponseWriter, r *http.Request) {
 	file := xlsx.NewFile()
 	sheet, err := file.AddSheet("Month")
 	if err != nil {
-		dh.log.Error(err.Error())
+		dh.log.Error(fmt.Sprintf("%s : %s", handlers.ReadUserIP(r), err.Error()))
 	}
 
-	dh.log.Info("download month clicked by user")
+	dh.log.Info(fmt.Sprintf("%s : download month clicked by user", handlers.ReadUserIP(r)))
 
 	monthData := orderedmap.New()
 
@@ -298,7 +299,7 @@ func (dh *dataHandler) DownloadMonth(w http.ResponseWriter, r *http.Request) {
 		row := sheet.AddRow()
 		data, ok := monthData.Get(key)
 		if !ok {
-			dh.log.Error("error in getting the data")
+			dh.log.Error(fmt.Sprintf("%s : error in getting the data", handlers.ReadUserIP(r)))
 		}
 		row.AddCell().Value = key
 		row.AddCell().Value = data.(string)
@@ -308,7 +309,7 @@ func (dh *dataHandler) DownloadMonth(w http.ResponseWriter, r *http.Request) {
 
 	err = file.Write(w)
 	if err != nil {
-		dh.log.Error(err.Error())
+		dh.log.Error(fmt.Sprintf("%s : %s", handlers.ReadUserIP(r), err.Error()))
 	}
 	return
 }
