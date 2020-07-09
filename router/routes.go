@@ -1,6 +1,9 @@
 package router
 
 import (
+	"net/http"
+	"os"
+
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 	"github.com/logdna/logdna-go/logger"
@@ -10,6 +13,42 @@ import (
 	"know/middleware"
 	"know/models"
 )
+
+// FileSystem is a custom file system handler to handle requests to React routes
+type FileSystem struct {
+	fs  http.FileSystem
+	log *logger.Logger
+}
+
+// Open opens file
+func (fs FileSystem) Open(path string) (http.File, error) {
+	index := "/index.html"
+
+	f, err := fs.fs.Open(path)
+	if os.IsNotExist(err) {
+		if f, err = fs.fs.Open(index); err != nil {
+			fs.log.Error(err.Error())
+			return nil, err
+		}
+	} else if err != nil {
+		fs.log.Error(err.Error())
+		return nil, err
+	}
+
+	s, err := f.Stat()
+	if err != nil {
+		fs.log.Error(err.Error())
+		return nil, err
+	}
+	if s.IsDir() {
+		if _, err = fs.fs.Open(index); err != nil {
+			fs.log.Error(err.Error())
+			return nil, err
+		}
+	}
+
+	return f, nil
+}
 
 //Router is the wrapper for go chi
 type Router struct {
@@ -37,10 +76,6 @@ func (router *Router) AddRoutes(stores *models.Stores, log *logger.Logger) {
 	dataHandler := data.New(log)
 
 	router.Group(func(r chi.Router) {
-
-		//Cache control middleware
-		r.Use(middleware.UICacheControl)
-
 		//routes to account handler
 		r.Get("/info", accountHandler.Info)
 		r.Get("/login", accountHandler.Login)
@@ -64,4 +99,9 @@ func (router *Router) AddRoutes(stores *models.Stores, log *logger.Logger) {
 		//default
 		r.Get("/*", accountHandler.Welcome)
 	})
+
+	// set up static file serving
+	fs := http.FileServer(FileSystem{fs: http.Dir("./client/"),
+		log: log})
+	router.With(middleware.UICacheControl).Handle("/*", fs)
 }
